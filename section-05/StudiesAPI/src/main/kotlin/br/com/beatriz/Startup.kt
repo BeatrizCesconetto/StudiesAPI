@@ -1,0 +1,11 @@
+package br.com.beatriz
+
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+
+@SpringBootApplication
+class Startup
+
+fun main(args: Array<String>) {
+	runApplication<StudiesApiApplication>(*args)
+}
