@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/PersonVO")
+@RequestMapping("/person")
 class PersonController {
 
     @Autowired
     private lateinit var service: PersonService //lateinit precisa ser var
     //var service: PersonService = PersonService() não precisa fazer assim, é melhor usar o @Autowired
 
-    /*@GetMapping( produces = [MediaType.APPLICATION_JSON_VALUE] )
+    @GetMapping( produces = [MediaType.APPLICATION_JSON_VALUE] )
     fun findAll(): List <PersonVO> {
         return service.findAll()
     }
@@ -36,8 +36,8 @@ class PersonController {
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE] )
-    fun create(@RequestBody PersonVO: PersonVO): PersonVO {
-        return service.create(PersonVO)
+    fun create(@RequestBody person: PersonVO): PersonVO {
+        return service.create(person)
     }
 
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE],
@@ -51,7 +51,7 @@ class PersonController {
     fun delete(@PathVariable(value = "id") id: Long) : ResponseEntity<*> {
        service.delete(id)
         return ResponseEntity.noContent().build<Any>()
-    }*/
+    }
 
 
 }
