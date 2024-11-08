@@ -1,10 +1,6 @@
 package br.com.beatriz.controller
 
-import br.com.beatriz.converters.NumberConverter
-import br.com.beatriz.exceptions.UnsupportedMathOperationException
-import br.com.beatriz.math.SimpleMath
-import br.com.beatriz.model.Person
-import br.com.beatriz.repository.PersonRepository
+import br.com.beatriz.data.vo.v1.PersonVO
 import br.com.beatriz.service.PersonService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -16,9 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
-import java.util.concurrent.atomic.AtomicLong
 
 @RestController
 @RequestMapping("/person")
@@ -29,27 +23,27 @@ class PersonController {
     //var service: PersonService = PersonService() não precisa fazer assim, é melhor usar o @Autowired
 
     @GetMapping( produces = [MediaType.APPLICATION_JSON_VALUE] )
-    fun findAll(): List <Person> {
+    fun findAll(): List <PersonVO> {
         return service.findAll()
     }
 
     @GetMapping( value = ["/{id}"],
         produces = [MediaType.APPLICATION_JSON_VALUE]  )
-    fun finById(@PathVariable(value = "id") id: Long): Person {
+    fun finById(@PathVariable(value = "id") id: Long): PersonVO {
        return service.findById(id)
     }
 
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE] )
-    fun create(@RequestBody person: Person): Person {
+    fun create(@RequestBody person: PersonVO): PersonVO {
         return service.create(person)
     }
 
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE] )
-    fun update(@RequestBody person: Person): Person {
-        return service.update(person)
+    fun update(@RequestBody PersonVO: PersonVO): PersonVO {
+        return service.update(PersonVO)
     }
 
     @DeleteMapping( value = ["/{id}"],
