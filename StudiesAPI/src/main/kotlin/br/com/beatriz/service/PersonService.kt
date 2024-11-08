@@ -1,11 +1,12 @@
 package br.com.beatriz.service
 
 import br.com.beatriz.exceptions.ResourceNotFoundException
-import br.com.beatriz.model.Person
+import br.com.beatriz.data.vo.v1.PersonVO
 import br.com.beatriz.repository.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.logging.Logger
+import br.com.beatriz.model.Person
 
 @Service
 class PersonService {

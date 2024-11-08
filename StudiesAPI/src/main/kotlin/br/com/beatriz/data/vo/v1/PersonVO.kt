@@ -1,11 +1,10 @@
-package br.com.beatriz.model
+package br.com.beatriz.data.vo.v1
 
 import jakarta.persistence.*
 
-@Entity
-@Table(name = "person")
-data class Person (
-     //Não pode usar val em data class
+
+data class PersonVO (
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
