@@ -1,5 +1,6 @@
 package br.com.beatriz.data.vo.v2
 
+
 import java.util.Date
 
 data class PersonVO (
