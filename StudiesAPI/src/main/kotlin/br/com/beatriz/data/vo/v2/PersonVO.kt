@@ -12,7 +12,7 @@ data class PersonVO (
 
     var id: Long = 0,
 
-    @field:JsonProperty("first_name")
+    @field:JsonProperty("first_name")//Para mudar o nome que aparece
     var firstName: String = "",
 
     @field:JsonProperty("last_name")
