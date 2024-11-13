@@ -12,7 +12,7 @@ class PersonMapper {
 
         val vo = PersonVO()
 
-        vo.id = person.id
+        vo.key = person.id
         vo.address = person.address
         vo.birthDay = Date()
         vo.firstName = person.firstName
@@ -27,7 +27,7 @@ class PersonMapper {
 
         val entity = Person()
 
-        entity.id = person.id
+        entity.id = person.key
         entity.firstName = person.firstName
         entity.lastName = person.lastName
         entity.address = person.address
