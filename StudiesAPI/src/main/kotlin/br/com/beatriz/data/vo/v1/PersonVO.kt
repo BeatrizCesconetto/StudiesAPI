@@ -1,23 +1,19 @@
 package br.com.beatriz.data.vo.v1
 
-import jakarta.persistence.*
+import br.com.beatriz.data.vo.v2.PersonVO
+import com.github.dozermapper.core.Mapping
+import org.springframework.hateoas.RepresentationModel
+import java.util.*
 
 
 data class PersonVO (
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
-
-    @Column(name = "first_name", nullable = false, length = 80)
+    @Mapping("id")
+    var key: Long = 0,
+    //@field:JsonProperty("first_name") Para mudar o nome que aparece
     var firstName: String = "",
-
-    @Column(name = "last_name", nullable = false, length = 80)
     var lastName: String = "",
-
-    @Column(nullable = false, length = 100)
     var address: String = "",
-
-    @Column(nullable = false, length = 6)
-    var gender: String = ""
-)
+    var gender: String = "",
+    var birthDay: Date? = null
+): RepresentationModel<PersonVO>()
