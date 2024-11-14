@@ -1,9 +1,9 @@
-package br.com.beatriz.mockito.service
+package br.com.beatriz.unittests.mockito.services
 
 import br.com.beatriz.exceptions.RequiredObjectIsNullException
 import br.com.beatriz.repository.PersonRepository
 import br.com.beatriz.service.PersonService
-import br.com.beatriz.unittests.mapper.mocks.MockPerson
+import br.com.beatriz.unittests.mocks.MockPerson
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

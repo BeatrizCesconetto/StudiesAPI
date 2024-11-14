@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import br.com.beatriz.data.vo.v1.PersonVO
 import br.com.beatriz.mapper.DozerMapper
 import br.com.beatriz.model.Person
-import br.com.beatriz.unittests.mapper.mocks.MockPerson
+import br.com.beatriz.unittests.mocks.MockPerson
 
 class DozerMapperTest {
 
