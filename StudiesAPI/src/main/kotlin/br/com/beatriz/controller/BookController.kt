@@ -30,7 +30,7 @@ class BookController {
     //var service: BooksService = BooksService() não precisa fazer assim, é melhor usar o @Autowired
 
     @GetMapping( produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML] )
-    @Operation(summary = "Finds all people", description = "Finds all people",
+    @Operation(summary = "Finds all Books", description = "Finds all people",
         tags = ["Books"],
         responses = [
             ApiResponse(description = "Success", responseCode = "200", content = [

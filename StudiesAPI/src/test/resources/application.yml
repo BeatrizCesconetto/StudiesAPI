@@ -1,5 +1,5 @@
 server:
-  port:8888
+  port:8080
 spring:
     datasource:
        driver-class-name: com.mysql.cj.jdbc.Driver
@@ -8,7 +8,7 @@ spring:
         ddl-auto: update
       properties:
         hibernate:
-          dialect: org.hibernate.dialect.MySQL9Dialect
+          dialect:  org.hibernate.dialect.MySQLDialect
       show-sql: true
 spring-doc:
   paths-to-match:
