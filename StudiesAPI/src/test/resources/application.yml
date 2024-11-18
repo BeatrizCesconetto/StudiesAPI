@@ -1,15 +1,14 @@
+server:
+  port:8080
 spring:
     datasource:
        driver-class-name: com.mysql.cj.jdbc.Driver
-       url: jdbc:mysql://localhost:3306/rest_with_spring_boot
-       username: root
-       password: Bc33441514@
     jpa:
       hibernate:
         ddl-auto: update
-        properties:
-          hibernate:
-            dialect: org.hibernate.dialect.MySQLDialect
+      properties:
+        hibernate:
+          dialect:  org.hibernate.dialect.MySQLDialect
       show-sql: true
 spring-doc:
   paths-to-match:

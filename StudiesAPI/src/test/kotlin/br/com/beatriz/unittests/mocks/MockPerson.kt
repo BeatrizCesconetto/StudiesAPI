@@ -1,4 +1,4 @@
-package br.com.beatriz.unittests.mapper.mocks
+package br.com.beatriz.unittests.mocks
 
 import java.util.ArrayList
 import br.com.beatriz.data.vo.v1.PersonVO
