@@ -1,9 +1,8 @@
 package br.com.beatriz.integrationtests.swagger
 
-import br.com.beatriz.integrationtests.ConfigsTest
+import br.com.beatriz.integrationtests.TestConfigs
 import br.com.beatriz.integrationtests.testcontainers.AbstractIntegrationTest
 import io.restassured.RestAssured.given
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,7 +14,7 @@ class SwaggerIntegrationTest() : AbstractIntegrationTest(){
 	fun shouldDisplaySwaggerUiPage() {
 		val content = given()
 			.basePath("/swagger-ui/index.html")
-			.port(ConfigsTest.SERVER_PORT)
+			.port(TestConfigs.SERVER_PORT)
 				.`when`()
 			.get()
 			.then()
