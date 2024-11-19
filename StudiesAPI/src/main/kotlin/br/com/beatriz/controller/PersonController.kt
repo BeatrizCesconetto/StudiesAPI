@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
+import org.springframework.web.bind.annotation.CrossOrigin
+
 
 @RestController
 @RequestMapping("/api/person/v1")
@@ -58,6 +60,7 @@ class PersonController {
         return service.findAll()
     }
 
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @GetMapping( *["/{id}"], produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML] )
     @Operation(summary = "Finds a Person ", description = "Finds a Person",
         tags = ["People"],
@@ -91,7 +94,7 @@ class PersonController {
         return service.findById(id)
     }
 
-
+    @CrossOrigin(origins = ["http://localhost:8080", "https://beatriz.com.br"])
     @PostMapping(consumes = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML],
         produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML] )
     @Operation(summary = "Adds a Person ", description = "Adds a Person",
