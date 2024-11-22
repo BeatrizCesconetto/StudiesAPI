@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import java.util.Base64
 import java.util.Date
 
 @Service
@@ -36,11 +35,10 @@ class JwtTokenProvider {
 
     @PostConstruct
     protected fun init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.toByteArray())
         algorithm = Algorithm.HMAC256(secretKey.toByteArray())
     }
 
-    fun createAccessToken(username: String, roles: List<String?>) : TokenVO {
+        fun createAccessToken(username: String, roles: List<String?>) : TokenVO {
         val now = Date()
         val validity = Date(now.time + validityInMiliSeconds)
         val accessToken = getAccessToken(username, roles, now, validity)
@@ -55,6 +53,16 @@ class JwtTokenProvider {
         )
     }
 
+    fun refreshToken(refreshToken: String) : TokenVO {
+        var token: String = ""
+        if (refreshToken.contains("Bearer")) token = refreshToken.substring("Bearer".length)
+        val verifier: JWTVerifier = JWT.require(algorithm).build()
+        var decodedJWT: DecodedJWT = verifier.verify(token)
+        val username: String = decodedJWT.subject
+        val roles: List<String?> = decodedJWT.getClaim("roles").asList(String::class.java)
+        return createAccessToken(username, roles)
+    }
+
     private fun getAccessToken(username: String, roles: List<String?>, now: Date, validity: Date): String {
         val issuerURL: String = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
         return JWT.create()
@@ -65,7 +73,6 @@ class JwtTokenProvider {
             .withSubject(username)
             .withIssuer(issuerURL)
             .sign(algorithm)
-
     }
 
     private fun getRefreshToken(username: String, roles: List<String?>, now: Date): String? {
@@ -85,7 +92,6 @@ class JwtTokenProvider {
     }
 
     private fun decodedToken(token: String): DecodedJWT {
-        val algorithm = Algorithm.HMAC256(secretKey.toByteArray())
         val verifier: JWTVerifier = JWT.require(algorithm).build()
         return verifier.verify(token)
     }
@@ -93,14 +99,14 @@ class JwtTokenProvider {
     fun resolveToken(request: HttpServletRequest): String? {
         val bearerToken = request.getHeader("Authorization")
         return if (!bearerToken.isNullOrBlank() && bearerToken.startsWith("Bearer ")) {
-             bearerToken.substring("Bearer".length)
+             bearerToken.substring("Bearer".length).trim()
         }else null
     }
 
     fun validateToken(token: String): Boolean {
-        val decodedJWT = decodedToken(token)
         try {
-            if (decodedJWT.expiresAt.before(Date())) false
+            val decodedJWT = decodedToken(token)
+            !decodedJWT.expiresAt.before(Date())
             return true
         } catch (e: Exception) {
             throw InvalidJwtAuthenticationException("Expired or invalid token")

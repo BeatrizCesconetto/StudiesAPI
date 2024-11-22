@@ -34,7 +34,7 @@ class AuthService {
         return try {
             val username = data.username
             val password = data.password
-            //authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
+            authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
             val user = repository.findByUsername(username)
             val tokenResponse:  TokenVO = if (user != null) {
                tokenProvider.createAccessToken(username!!, user.roles)
@@ -48,6 +48,14 @@ class AuthService {
         }
     }
 
-
-
+    fun refreshToken(username: String, refreshToken: String) : ResponseEntity<*> {
+        logger.info("Trying to get refresh token to user  ${username}")
+            val user = repository.findByUsername(username)
+            val tokenResponse:  TokenVO = if (user != null) {
+               tokenProvider.refreshToken(refreshToken)
+            } else {
+                throw UsernameNotFoundException("Username $username not found!")
+            }
+           return ResponseEntity.ok(tokenResponse)
+    }
 }
