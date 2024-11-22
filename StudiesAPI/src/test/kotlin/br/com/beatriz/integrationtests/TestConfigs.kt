@@ -1,7 +1,7 @@
 package br.com.beatriz.integrationtests
 
 object TestConfigs {
-    const val SERVER_PORT = 8080
+    const val SERVER_PORT = 9999
 
     const val CONTENT_TYPE_JSON = "application/json"
     const val CONTENT_TYPE_XML = "application/xml"

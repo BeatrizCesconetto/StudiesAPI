@@ -51,8 +51,7 @@ class SecurityConfig {
             .httpBasic{ basic: HttpBasicConfigurer<HttpSecurity> -> basic.disable()}
             .csrf {csrf: CsrfConfigurer<HttpSecurity> -> csrf.disable()}
             .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .sessionManagement { session:
-                                 SessionManagementConfigurer<HttpSecurity?> ->
+            .sessionManagement { session: SessionManagementConfigurer<HttpSecurity?> ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authorizeHttpRequests {
