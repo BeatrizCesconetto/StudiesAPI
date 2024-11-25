@@ -1,7 +1,7 @@
 package br.com.beatriz.exceptions.handler
 
 import br.com.beatriz.exceptions.ExceptionResponse
-import br.com.beatriz.exceptions.RequiredObjectIsNullException
+import br.com.beatriz.exceptions.InvalidJwtAuthenticationException
 import br.com.beatriz.exceptions.ResourceNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -39,14 +39,13 @@ class CustomizedResponseEntityExceptionHandler  : ResponseEntityExceptionHandler
         return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.NOT_FOUND)
     }
 
-    @ExceptionHandler(RequiredObjectIsNullException::class)
-    fun handleBadRequestException(ex: Exception, request: WebRequest): ResponseEntity<ExceptionResponse> {
+    @ExceptionHandler(InvalidJwtAuthenticationException::class)
+    fun handleInvalidJwtAuthenticationExceptions(ex: Exception, request: WebRequest): ResponseEntity<ExceptionResponse> {
         val exceptionResponse = ExceptionResponse(
             Date(),
             ex.message,
             request.getDescription(false)
         )
-
-        return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.BAD_REQUEST)
+        return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.FORBIDDEN)
     }
 }
