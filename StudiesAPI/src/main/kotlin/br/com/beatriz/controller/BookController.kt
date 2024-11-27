@@ -118,37 +118,33 @@ class BookController {
         return service.create(book)
     }
 
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML],
-        produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML] )
-    @Operation(summary = "Updates a book's information ", description = "Updates a book's information ",
+    @PutMapping(value = ["/{id}"], consumes = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML],
+        produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML])
+    @Operation(summary = "Updates a book's information", description = "Updates a book's information",
         tags = ["Books"],
         responses = [
-            ApiResponse(
-                description = "Success",
-                responseCode = "200",
-                content = [
-                    Content(schema = Schema(implementation = BookVO::class))
-                ]),
-
-            ApiResponse( description = "No content", responseCode = "204", content = [
+            ApiResponse(description = "Success", responseCode = "200", content = [
+                Content(schema = Schema(implementation = BookVO::class))
+            ]),
+            ApiResponse(description = "No content", responseCode = "204", content = [
                 Content(schema = Schema(implementation = Unit::class))
             ]),
-            ApiResponse( description = "Bad request", responseCode = "400", content = [
+            ApiResponse(description = "Bad request", responseCode = "400", content = [
                 Content(schema = Schema(implementation = Unit::class))
             ]),
-            ApiResponse( description = "Unauthorized", responseCode = "401", content = [
+            ApiResponse(description = "Unauthorized", responseCode = "401", content = [
                 Content(schema = Schema(implementation = Unit::class))
             ]),
-            ApiResponse( description = "Not found", responseCode = "404", content = [
+            ApiResponse(description = "Not found", responseCode = "404", content = [
                 Content(schema = Schema(implementation = Unit::class))
             ]),
-            ApiResponse( description = "Internal Error", responseCode = "500", content = [
+            ApiResponse(description = "Internal Error", responseCode = "500", content = [
                 Content(schema = Schema(implementation = Unit::class))
             ]),
         ]
     )
-    fun update(@RequestBody BooksVO: BookVO): BookVO {
-        return service.update(BooksVO)
+    fun update(@PathVariable(value = "id") id: Long, @RequestBody book: BookVO): BookVO {
+        return service.update(id, book)
     }
 
     @DeleteMapping( value = ["/{id}"],
@@ -177,6 +173,4 @@ class BookController {
         service.delete(id)
         return ResponseEntity.noContent().build<Any>()
     }
-
-
 }

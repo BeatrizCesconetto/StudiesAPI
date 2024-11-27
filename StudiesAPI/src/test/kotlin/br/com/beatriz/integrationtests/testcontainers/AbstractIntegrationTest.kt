@@ -2,6 +2,7 @@ package br.com.beatriz.integrationtests.testcontainers
 
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.MapPropertySource
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.containers.MySQLContainer
@@ -10,6 +11,7 @@ import org.testcontainers.containers.wait.strategy.Wait
 @ContextConfiguration(initializers = [AbstractIntegrationTest.Initializer::class])
 open class AbstractIntegrationTest {
 
+    @Configuration
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         override fun initialize(applicationContext: ConfigurableApplicationContext) {

@@ -55,10 +55,10 @@ class BookService {
         bookVO.add(withSelfRel)
         return bookVO
     }
-    fun update(book: BookVO?) : BookVO {
+    fun update(id: Long, book: BookVO?) : BookVO {
         if (book == null) throw RequiredObjectIsNullException()
-        logger.info("updating one BookVO with id ${book.key}!")
-        val entity = repository.findById(book.key)
+        logger.info("updating one BookVO with id $id!")
+        val entity = repository.findById(id)
             .orElseThrow { ResourceNotFoundException("No records found for this id") }
 
         entity.author = book.author
