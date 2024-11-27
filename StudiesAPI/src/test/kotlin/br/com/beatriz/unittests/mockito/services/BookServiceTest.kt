@@ -132,7 +132,7 @@ class BookServiceTest {
         fun updateWithNullBook() {
             val exception: Exception = assertThrows(
                 RequiredObjectIsNullException::class.java
-            ) { service.update(null) }
+            ) { service.update(1, null) }
 
             val expectedMessage = "It is not allow to persist a null object!"
             val actualMessage = exception.message
@@ -150,7 +150,7 @@ class BookServiceTest {
             `when`(repository.findById(1)).thenReturn(Optional.of(entity))
 
             val vo = inputObject.mockVO(1)
-            val result = service.update(vo)
+            val result = service.update(1, vo)
 
             assertNotNull(result)
             assertNotNull(result.key)

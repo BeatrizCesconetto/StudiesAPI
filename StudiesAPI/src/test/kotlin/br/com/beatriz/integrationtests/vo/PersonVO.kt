@@ -1,8 +1,9 @@
 package br.com.beatriz.integrationtests.vo
 
+import jakarta.xml.bind.annotation.XmlRootElement
 import java.util.*
 
-
+@XmlRootElement
 data class PersonVO (
 
     var id: Long = 0,

@@ -1,4 +1,4 @@
-package br.com.beatriz.data.vo.v1
+package br.com.beatriz.integrationtests.vo
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
