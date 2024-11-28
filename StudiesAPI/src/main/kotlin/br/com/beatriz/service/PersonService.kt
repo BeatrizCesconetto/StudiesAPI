@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service
 import java.util.logging.Logger
 import br.com.beatriz.model.Person
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
+import org.springframework.transaction.annotation.Transactional
 import br.com.beatriz.controller.PersonController as PersonController1
 
 
@@ -83,6 +84,19 @@ class PersonService {
         entity.gender = person.gender
 
         val personVO: PersonVO = DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
+        val withSelfRel = linkTo(PersonController1::class.java).slash(personVO.key).withSelfRel()
+        personVO.add(withSelfRel)
+        return personVO
+    }
+
+    @Transactional
+    fun disabledPerson(id: Long): PersonVO {
+        logger.info("Disabling one Person with ID $id!")
+        repository.disabledPerson(id)
+        val person = repository.findById(id)
+            .orElseThrow { ResourceNotFoundException("No records found for this ID") }
+
+        val personVO: PersonVO = DozerMapper.parseObject(person, PersonVO::class.java)
         val withSelfRel = linkTo(PersonController1::class.java).slash(personVO.key).withSelfRel()
         personVO.add(withSelfRel)
         return personVO

@@ -11,5 +11,6 @@ data class PersonVO (
     var lastName: String = "",
     var address: String = "",
     var gender: String = "",
-    var birthDay: Date? = null
+    var birthDay: Date? = null,
+    var enabled: Boolean = true
 )

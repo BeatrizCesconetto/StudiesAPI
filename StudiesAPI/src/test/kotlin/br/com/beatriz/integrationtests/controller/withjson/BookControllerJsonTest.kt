@@ -24,7 +24,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = [Startup::class])
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Startup::class])
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(Lifecycle.PER_CLASS)
 class BookControllerJsonTest : AbstractIntegrationTest() {
@@ -105,9 +105,10 @@ class BookControllerJsonTest : AbstractIntegrationTest() {
 
         val content: String = given().spec(specification)
             .contentType(TestConfigs.CONTENT_TYPE_JSON)
+            .pathParam("id", book.key)
             .body(book)
             .`when`()
-            .put()
+            .put("/{id}")
             .then()
             .statusCode(200)
             .extract()
