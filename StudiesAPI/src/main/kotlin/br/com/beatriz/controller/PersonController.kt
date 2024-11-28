@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.PatchMapping
 
 
 @RestController
@@ -180,6 +181,39 @@ class PersonController {
     )
     fun update(@RequestBody PersonVO: PersonVO): PersonVO {
         return service.update(PersonVO)
+    }
+
+    @PatchMapping( *["/{id}"], produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML] )
+    @Operation(summary = "Disable a Person ", description = "Finds a Person",
+        tags = ["People"],
+        responses = [
+            ApiResponse(
+                description = "Success",
+                responseCode = "200",
+                content = [
+                    Content(schema = Schema(implementation = PersonVO::class))
+                ]),
+
+            ApiResponse( description = "No content", responseCode = "204", content = [
+                Content(schema = Schema(implementation = Unit::class))
+            ]),
+            ApiResponse( description = "Bad request", responseCode = "400", content = [
+                Content(schema = Schema(implementation = Unit::class))
+            ]),
+            ApiResponse( description = "Unauthorized", responseCode = "401", content = [
+                Content(schema = Schema(implementation = Unit::class))
+            ]),
+            ApiResponse( description = "Not found", responseCode = "404", content = [
+                Content(schema = Schema(implementation = Unit::class))
+            ]),
+            ApiResponse( description = "Internal Error", responseCode = "500", content = [
+                Content(schema = Schema(implementation = Unit::class))
+            ]),
+        ]
+    )
+
+    fun disabledPersonById(@PathVariable(value = "id") id: Long): PersonVO {
+        return service.disabledPerson(id)
     }
 
     @DeleteMapping( value = ["/{id}"],
