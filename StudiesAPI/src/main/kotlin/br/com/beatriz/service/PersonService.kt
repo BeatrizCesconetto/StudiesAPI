@@ -3,14 +3,16 @@ package br.com.beatriz.service
 import br.com.beatriz.exceptions.ResourceNotFoundException
 import br.com.beatriz.data.vo.v1.PersonVO
 import br.com.beatriz.exceptions.RequiredObjectIsNullException
-import br.com.beatriz.data.vo.v2.PersonVO as PersonVOV2
 import br.com.beatriz.mapper.DozerMapper
-import br.com.beatriz.mapper.custom.PersonMapper
 import br.com.beatriz.repository.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.logging.Logger
 import br.com.beatriz.model.Person
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PagedResourcesAssembler
+import org.springframework.hateoas.EntityModel
+import org.springframework.hateoas.PagedModel
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.transaction.annotation.Transactional
 import br.com.beatriz.controller.PersonController as PersonController1
@@ -23,28 +25,37 @@ class PersonService {
     private lateinit var repository: PersonRepository
 
     @Autowired
-    private lateinit var mapper: PersonMapper
+    private lateinit var assembler: PagedResourcesAssembler<PersonVO>
+
+
 
     private val logger = Logger.getLogger(PersonService::class.java.name)
 
-    fun findAll(): List <PersonVO> {
+    fun findAll(pageable: Pageable): PagedModel<EntityModel<PersonVO>> {
+
         logger.info("Finding all people!")
-        val persons = repository.findAll()
+        val persons = repository.findAll(pageable)
+        val vos = persons.map {p -> DozerMapper.parseObject(p,PersonVO::class.java)}
+        vos.map { p -> p.add(linkTo(PersonController1::class.java).slash(p.key).withSelfRel()) }
+        return assembler.toModel(vos)
+    }
 
-        val vos = DozerMapper.parseListObjects(persons, PersonVO::class.java)
-        for (person in vos) {
-            val withSelfRel = linkTo(PersonController1::class.java).slash(person.key).withSelfRel()
-            person.add(withSelfRel)
-        }
+    fun findPersonByName(firstName: String, pageable: Pageable): PagedModel<EntityModel<PersonVO>> {
 
-        return vos
+        logger.info("Finding all people!")
+
+        val persons = repository.findPersonByName(firstName, pageable)
+        val vos = persons.map {p -> DozerMapper.parseObject(p,PersonVO::class.java)}
+        vos.map { p -> p.add(linkTo(PersonController1::class.java).slash(p.key).withSelfRel()) }
+        return assembler.toModel(vos)
     }
 
     fun findById(id: Long): PersonVO {
+
         logger.info("Finding one Person with ID $id!")
+
         val person = repository.findById(id)
             .orElseThrow { ResourceNotFoundException("No records found for this ID") }
-
         val personVO: PersonVO = DozerMapper.parseObject(person, PersonVO::class.java)
         val withSelfRel = linkTo(PersonController1::class.java).slash(personVO.key).withSelfRel()
         personVO.add(withSelfRel)
@@ -57,16 +68,6 @@ class PersonService {
         logger.info("Creating one PersonVO with name ${person.firstName}!")
         val entity: Person = DozerMapper.parseObject(person, Person::class.java)
         val personVO: PersonVO = DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
-        val withSelfRel = linkTo(PersonController1::class.java).slash(personVO.key).withSelfRel()
-        personVO.add(withSelfRel)
-        return personVO
-    }
-    fun createV2(person: PersonVOV2?): PersonVOV2 {
-        if (person == null) throw RequiredObjectIsNullException()
-        //chamada ao repositório e consequentemente ao banco
-        logger.info("Creating one PersonVO with name ${person.firstName}!")
-        val entity: Person = mapper.mapVOToEntity(person)
-        val personVO: br.com.beatriz.data.vo.v2.PersonVO = mapper.mapEntityToVO(repository.save(entity))
         val withSelfRel = linkTo(PersonController1::class.java).slash(personVO.key).withSelfRel()
         personVO.add(withSelfRel)
         return personVO

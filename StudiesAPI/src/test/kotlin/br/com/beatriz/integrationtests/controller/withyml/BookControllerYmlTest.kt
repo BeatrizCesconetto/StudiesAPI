@@ -8,6 +8,7 @@ import br.com.beatriz.integrationtests.testcontainers.AbstractIntegrationTest
 import br.com.beatriz.integrationtests.vo.AccountCredentialsVO
 import br.com.beatriz.integrationtests.vo.BookVO
 import br.com.beatriz.integrationtests.vo.TokenVO
+import br.com.beatriz.integrationtests.vo.wrappers.WrapperBookVO
 import com.fasterxml.jackson.core.JsonProcessingException
 import io.restassured.http.ContentType
 import com.fasterxml.jackson.databind.JsonMappingException
@@ -26,7 +27,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Startup::class])
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = [Startup::class])
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(Lifecycle.PER_CLASS)
 class BookControllerYamlTest : AbstractIntegrationTest() {
@@ -208,7 +209,7 @@ class BookControllerYamlTest : AbstractIntegrationTest() {
     @Order(5)
     @Throws(JsonMappingException::class, JsonProcessingException::class)
     fun testFindAll() {
-        val response = given()
+        val wrapper = given()
             .config(
                 RestAssuredConfig
                     .config()
@@ -218,34 +219,40 @@ class BookControllerYamlTest : AbstractIntegrationTest() {
                     )
             )
             .spec(specification)
-            .contentType(TestConfigs.CONTENT_TYPE_YML) //.queryParams("page", 0 , "limit", 5, "direction", "asc")
+            .contentType(TestConfigs.CONTENT_TYPE_YML)
             .`when`()
             .get()
             .then()
             .statusCode(200)
             .extract()
             .body()
-            .`as`(Array<BookVO>::class.java, objectMapper)
+            .`as`(WrapperBookVO::class.java, objectMapper)
 
-        val content: MutableList<BookVO> = Arrays.asList(*response)
-        val foundBookOne: BookVO = content[0]
-        assertNotNull(foundBookOne.key)
+
+        val content = wrapper.embedded?.books
+
+        val foundBookOne = content?.get(0)
+
+        assertNotNull(foundBookOne!!.key)
         assertNotNull(foundBookOne.title)
         assertNotNull(foundBookOne.author)
         assertNotNull(foundBookOne.price)
         assertTrue(foundBookOne.key > 0)
-        assertEquals("Working effectively with legacy code", foundBookOne.title)
-        assertEquals("Michael C. Feathers", foundBookOne.author)
-        assertEquals(49.00, foundBookOne.price)
-        val foundBookFive: BookVO = content[4]
-        assertNotNull(foundBookFive.key)
-        assertNotNull(foundBookFive.title)
-        assertNotNull(foundBookFive.author)
-        assertNotNull(foundBookFive.price)
+        assertEquals("Big Data: como extrair volume, variedade, velocidade e valor da avalanche de informação cotidiana", foundBookOne.title)
+        assertEquals("Viktor Mayer-Schonberger e Kenneth Kukier", foundBookOne.author)
+        assertEquals(54.00, foundBookOne.price)
+
+
+        val foundBookFive: BookVO? = content?.get(4)
+
+        Assertions.assertNotNull(foundBookFive!!.key)
+        Assertions.assertNotNull(foundBookFive.title)
+        Assertions.assertNotNull(foundBookFive.author)
+        Assertions.assertNotNull(foundBookFive.price)
         assertTrue(foundBookFive.key > 0)
-        assertEquals("Code complete", foundBookFive.title)
-        assertEquals("Steve McConnell", foundBookFive.author)
-        assertEquals(58.0, foundBookFive.price)
+        Assertions.assertEquals("Domain Driven Design", foundBookFive.title)
+        Assertions.assertEquals("Eric Evans", foundBookFive.author)
+        Assertions.assertEquals(92.0, foundBookFive.price)
     }
 
     private fun mockBook() {

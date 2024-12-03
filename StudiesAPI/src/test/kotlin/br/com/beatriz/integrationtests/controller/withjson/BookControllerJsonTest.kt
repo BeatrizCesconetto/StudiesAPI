@@ -6,6 +6,8 @@ import br.com.beatriz.integrationtests.testcontainers.AbstractIntegrationTest
 import br.com.beatriz.integrationtests.vo.AccountCredentialsVO
 import br.com.beatriz.integrationtests.vo.BookVO
 import br.com.beatriz.integrationtests.vo.TokenVO
+import br.com.beatriz.integrationtests.vo.wrappers.WrapperBookVO
+import br.com.beatriz.integrationtests.vo.wrappers.WrapperPersonVO
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonMappingException
@@ -24,7 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Startup::class])
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = [Startup::class])
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(Lifecycle.PER_CLASS)
 class BookControllerJsonTest : AbstractIntegrationTest() {
@@ -180,18 +182,19 @@ class BookControllerJsonTest : AbstractIntegrationTest() {
             .body()
             .asString()
 
-        val content = objectMapper.readValue(strContent, Array <BookVO>::class.java)
+        val wrapper = objectMapper.readValue(strContent, WrapperBookVO::class.java)
+        val content = wrapper.embedded!!.books
 
-        val foundBookOne: BookVO? = content?.get(0)
+        val foundBookOne = content?.get(0)
 
         assertNotNull(foundBookOne!!.key)
         assertNotNull(foundBookOne.title)
         assertNotNull(foundBookOne.author)
         assertNotNull(foundBookOne.price)
         assertTrue(foundBookOne.key > 0)
-        assertEquals("Working effectively with legacy code", foundBookOne.title)
-        assertEquals("Michael C. Feathers", foundBookOne.author)
-        assertEquals(49.00, foundBookOne.price)
+        assertEquals("Big Data: como extrair volume, variedade, velocidade e valor da avalanche de informação cotidiana", foundBookOne.title)
+        assertEquals("Viktor Mayer-Schonberger e Kenneth Kukier", foundBookOne.author)
+        assertEquals(54.00, foundBookOne.price)
 
 
         val foundBookFive: BookVO? = content?.get(4)
@@ -201,9 +204,9 @@ class BookControllerJsonTest : AbstractIntegrationTest() {
         Assertions.assertNotNull(foundBookFive.author)
         Assertions.assertNotNull(foundBookFive.price)
         assertTrue(foundBookFive.key > 0)
-        Assertions.assertEquals("Code complete", foundBookFive.title)
-        Assertions.assertEquals("Steve McConnell", foundBookFive.author)
-        Assertions.assertEquals(58.0, foundBookFive.price)
+        Assertions.assertEquals("Domain Driven Design", foundBookFive.title)
+        Assertions.assertEquals("Eric Evans", foundBookFive.author)
+        Assertions.assertEquals(92.0, foundBookFive.price)
     }
 
 

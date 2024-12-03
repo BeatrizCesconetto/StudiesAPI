@@ -1,6 +1,6 @@
 package br.com.beatriz.mapper.custom
 
-import br.com.beatriz.data.vo.v2.PersonVO
+import br.com.beatriz.data.vo.v1.PersonVO
 import br.com.beatriz.model.Person
 import org.springframework.stereotype.Service
 import java.util.Date

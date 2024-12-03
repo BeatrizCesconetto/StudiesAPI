@@ -1,6 +1,5 @@
 package br.com.beatriz.data.vo.v1
 
-import br.com.beatriz.data.vo.v2.PersonVO
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.dozermapper.core.Mapping
