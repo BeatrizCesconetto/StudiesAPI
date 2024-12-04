@@ -255,6 +255,44 @@ class BookControllerYamlTest : AbstractIntegrationTest() {
         Assertions.assertEquals(92.0, foundBookFive.price)
     }
 
+    @Test
+    @Order(5)
+    @Throws(JsonMappingException::class, JsonProcessingException::class)
+    fun testHATEOS() {
+        val wrapper = given()
+            .config(
+                RestAssuredConfig
+                    .config()
+                    .encoderConfig(
+                        EncoderConfig.encoderConfig()
+                            .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)
+                    )
+            )
+            .spec(specification)
+            .contentType(TestConfigs.CONTENT_TYPE_YML)
+            .`when`()
+            .get()
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asString()
+
+        assertTrue(wrapper.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/12"}}}"""))
+        assertTrue(wrapper.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/3"}}}"""))
+        assertTrue(wrapper.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/5"}}}"""))
+        assertTrue(wrapper.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/2"}}}"""))
+        assertTrue(wrapper.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/8"}}}"""))
+
+        assertTrue(wrapper.contains("""{"first":{"href":"http://localhost:8081/api/book/v1?page=0&size=12&sort=title,asc"}"""))
+        assertTrue(wrapper.contains(""","self":{"href":"http://localhost:8081/api/book/v1?page=0&size=12&sort=title,asc"}"""))
+        assertTrue(wrapper.contains(""","next":{"href":"http://localhost:8081/api/book/v1?page=1&size=12&sort=title,asc"}"""))
+        assertTrue(wrapper.contains(""","last":{"href":"http://localhost:8081/api/book/v1?page=1&size=12&sort=title,asc"}"""))
+
+        assertTrue(wrapper.contains(""","page":{"size":12,"totalElements":15,"totalPages":2,"number":0}}"""))
+
+    }
+
     private fun mockBook() {
         book.title = "Docker Deep Dive"
         book.author = "Nigel Poulton"

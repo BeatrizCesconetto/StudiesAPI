@@ -26,7 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Startup::class])
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = [Startup::class])
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(Lifecycle.PER_CLASS)
 class BookControllerXmlTest : AbstractIntegrationTest() {
@@ -203,6 +203,37 @@ class BookControllerXmlTest : AbstractIntegrationTest() {
         Assertions.assertEquals("Domain Driven Design", foundBookFive.title)
         Assertions.assertEquals("Eric Evans", foundBookFive.author)
         Assertions.assertEquals(92.0, foundBookFive.price)
+    }
+
+    @Test
+    @Order(7)
+    @Throws(JsonMappingException::class, JsonProcessingException::class)
+    fun testHATEOS() {
+        val strContent = given()
+            .spec(specification)
+            .contentType(TestConfigs.CONTENT_TYPE_XML)
+            .`when`()
+            .get()
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asString()
+
+        println(strContent)
+
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/12"}}}"""))
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/3"}}}"""))
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/5"}}}"""))
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/2"}}}"""))
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/8"}}}"""))
+
+        assertTrue(strContent.contains("""{"first":{"href":"http://localhost:8081/api/book/v1?page=0&size=12&sort=title,asc"}"""))
+        assertTrue(strContent.contains(""","self":{"href":"http://localhost:8081/api/book/v1?page=0&size=12&sort=title,asc"}"""))
+        assertTrue(strContent.contains(""","next":{"href":"http://localhost:8081/api/book/v1?page=1&size=12&sort=title,asc"}"""))
+        assertTrue(strContent.contains(""","last":{"href":"http://localhost:8081/api/book/v1?page=1&size=12&sort=title,asc"}"""))
+
+        assertTrue(strContent.contains(""","page":{"size":12,"totalElements":15,"totalPages":2,"number":0}}"""))
     }
 
     private fun mockBook() {
