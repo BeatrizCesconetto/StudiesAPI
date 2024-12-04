@@ -6,6 +6,7 @@ import br.com.beatriz.integrationtests.testcontainers.AbstractIntegrationTest
 import br.com.beatriz.integrationtests.vo.AccountCredentialsVO
 import br.com.beatriz.integrationtests.vo.PersonVO
 import br.com.beatriz.integrationtests.vo.TokenVO
+import br.com.beatriz.integrationtests.vo.wrappers.WrapperPersonVO
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured.given
@@ -21,7 +22,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Startup::class])
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = [Startup::class])
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(Lifecycle.PER_CLASS)
 class PersonControllerXmlTest : AbstractIntegrationTest() {
@@ -230,6 +231,9 @@ class PersonControllerXmlTest : AbstractIntegrationTest() {
         val content = given()
             .spec(specification)
             .contentType(TestConfigs.CONTENT_TYPE_XML)
+            .queryParams("page", 3,
+                "limit", 12,
+                "direction", "desc")
             .`when`()
             .get()
             .then()
@@ -238,11 +242,55 @@ class PersonControllerXmlTest : AbstractIntegrationTest() {
             .body()
             .asString()
 
-        val people = objectMapper.readValue(content, Array <PersonVO>::class.java)
+        val wrapper = objectMapper.readValue(content, WrapperPersonVO::class.java)
+        val people = wrapper.embedded!!.persons
 
-        val item1 = people[0]
+        val item1 = people?.get(0)
 
-        assertNotNull(item1.id)
+        assertNotNull(item1!!.id)
+        assertNotNull(item1.firstName)
+        assertNotNull(item1.lastName)
+        assertNotNull(item1.address)
+        assertNotNull(item1.gender)
+        assertEquals("Wallace", item1.firstName)
+        assertEquals("Penhall", item1.lastName)
+        assertEquals("8024 Starling Point", item1.address)
+        assertEquals("Male", item1.gender)
+        assertEquals(false, item1.enabled)
+
+        val item2 = people[5]
+
+        assertNotNull(item2.id)
+        assertNotNull(item2.firstName)
+        assertNotNull(item2.lastName)
+        assertNotNull(item2.address)
+        assertNotNull(item2.gender)
+        assertEquals("Vincent", item2.firstName)
+        assertEquals("Fisk", item2.lastName)
+        assertEquals("7086 Summit Circle", item2.address)
+        assertEquals("Male", item2.gender)
+        assertEquals(true, item2.enabled)
+    }
+    @Test
+    @Order(7)
+    fun testFindByName() {
+        val content = given()
+            .spec(specification)
+            .contentType(TestConfigs.CONTENT_TYPE_XML)
+            .pathParam("firstName", "ayr")
+            .`when`()["findPersonByName/{firstName}"]
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asString()
+
+        val wrapper = objectMapper.readValue(content, WrapperPersonVO::class.java)
+        val people = wrapper.embedded!!.persons
+
+        val item1 = people?.get(0)
+
+        assertNotNull(item1!!.id)
         assertNotNull(item1.firstName)
         assertNotNull(item1.lastName)
         assertNotNull(item1.address)
@@ -252,22 +300,9 @@ class PersonControllerXmlTest : AbstractIntegrationTest() {
         assertEquals("São Paulo", item1.address)
         assertEquals("Male", item1.gender)
         assertEquals(true, item1.enabled)
-
-        val item2 = people[5]
-
-        assertNotNull(item2.id)
-        assertNotNull(item2.firstName)
-        assertNotNull(item2.lastName)
-        assertNotNull(item2.address)
-        assertNotNull(item2.gender)
-        assertEquals("Nikola", item2.firstName)
-        assertEquals("Tesla", item2.lastName)
-        assertEquals("Smiljan - Croatia", item2.address)
-        assertEquals("Male", item2.gender)
-        assertEquals(true, item2.enabled)
     }
     @Test
-    @Order(7)
+    @Order(8)
     fun testFindAllWithoutToken() {
 
         val specificationWithoutToken: RequestSpecification = RequestSpecBuilder()
@@ -286,6 +321,41 @@ class PersonControllerXmlTest : AbstractIntegrationTest() {
             .extract()
             .body()
             .asString()
+    }
+
+    @Test
+    @Order(9)
+    fun testHATEOS() {
+        val content = given()
+            .spec(specification)
+            .contentType(TestConfigs.CONTENT_TYPE_XML)
+            .queryParams(
+                "page", 3,
+                "limit", 5,
+                "direction", "asc")
+            .`when`()
+            .get()
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asString()
+
+        println(content)
+
+        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/974"}}}"""))
+        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/667"}}}"""))
+        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/926"}}}"""))
+        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/586"}}}"""))
+        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/949"}}}"""))
+
+        assertTrue(content.contains("""{"first":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=0&size=5&sort=firstName,asc"}"""))
+        assertTrue(content.contains(""","prev":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=2&size=5&sort=firstName,asc"}"""))
+        assertTrue(content.contains(""","self":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=3&size=5&sort=firstName,asc"}"""))
+        assertTrue(content.contains(""","next":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=4&size=5&sort=firstName,asc"}"""))
+        assertTrue(content.contains(""","last":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=201&size=5&sort=firstName,asc"}"""))
+
+        assertTrue(content.contains(""""page":{"size":5,"totalElements":1007,"totalPages":202,"number":3}}"""))
     }
 
 

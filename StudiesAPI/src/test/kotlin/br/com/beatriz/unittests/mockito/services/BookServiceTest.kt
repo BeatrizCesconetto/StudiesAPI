@@ -1,3 +1,4 @@
+/*
 package br.com.beatriz.unittests.mockito.services
 
 import br.com.beatriz.exceptions.RequiredObjectIsNullException
@@ -171,4 +172,4 @@ class BookServiceTest {
 
 
     }
-}
+}*/

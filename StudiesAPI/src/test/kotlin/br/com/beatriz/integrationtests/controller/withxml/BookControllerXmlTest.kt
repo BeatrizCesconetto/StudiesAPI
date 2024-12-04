@@ -6,6 +6,7 @@ import br.com.beatriz.integrationtests.testcontainers.AbstractIntegrationTest
 import br.com.beatriz.integrationtests.vo.AccountCredentialsVO
 import br.com.beatriz.integrationtests.vo.BookVO
 import br.com.beatriz.integrationtests.vo.TokenVO
+import br.com.beatriz.integrationtests.vo.wrappers.WrapperBookVO
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonMappingException
@@ -25,7 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Startup::class])
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = [Startup::class])
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(Lifecycle.PER_CLASS)
 class BookControllerXmlTest : AbstractIntegrationTest() {
@@ -177,28 +178,62 @@ class BookControllerXmlTest : AbstractIntegrationTest() {
             .body()
             .asString()
 
-        val content = objectMapper!!.readValue(strContent, Array<BookVO>::class.java)
+        val wrapper = objectMapper.readValue(strContent, WrapperBookVO::class.java)
+        val content = wrapper.embedded!!.books
 
-        val foundBookOne: BookVO? = content?.get(0)
+        val foundBookOne = content?.get(0)
 
-        Assertions.assertNotNull(foundBookOne!!.key)
-        Assertions.assertNotNull(foundBookOne.title)
-        Assertions.assertNotNull(foundBookOne.author)
-        Assertions.assertNotNull(foundBookOne.price)
+        assertNotNull(foundBookOne!!.key)
+        assertNotNull(foundBookOne.title)
+        assertNotNull(foundBookOne.author)
+        assertNotNull(foundBookOne.price)
         assertTrue(foundBookOne.key > 0)
-        Assertions.assertEquals("Working effectively with legacy code", foundBookOne.title)
-        Assertions.assertEquals("Michael C. Feathers", foundBookOne.author)
-        Assertions.assertEquals(49.00, foundBookOne.price)
+        assertEquals("Big Data: como extrair volume, variedade, velocidade e valor da avalanche de informação cotidiana", foundBookOne.title)
+        assertEquals("Viktor Mayer-Schonberger e Kenneth Kukier", foundBookOne.author)
+        assertEquals(54.00, foundBookOne.price)
+
 
         val foundBookFive: BookVO? = content?.get(4)
+
         Assertions.assertNotNull(foundBookFive!!.key)
         Assertions.assertNotNull(foundBookFive.title)
         Assertions.assertNotNull(foundBookFive.author)
         Assertions.assertNotNull(foundBookFive.price)
         assertTrue(foundBookFive.key > 0)
-        Assertions.assertEquals("Code complete", foundBookFive.title)
-        Assertions.assertEquals("Steve McConnell", foundBookFive.author)
-        Assertions.assertEquals(58.0, foundBookFive.price)
+        Assertions.assertEquals("Domain Driven Design", foundBookFive.title)
+        Assertions.assertEquals("Eric Evans", foundBookFive.author)
+        Assertions.assertEquals(92.0, foundBookFive.price)
+    }
+
+    @Test
+    @Order(7)
+    @Throws(JsonMappingException::class, JsonProcessingException::class)
+    fun testHATEOS() {
+        val strContent = given()
+            .spec(specification)
+            .contentType(TestConfigs.CONTENT_TYPE_XML)
+            .`when`()
+            .get()
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .asString()
+
+        println(strContent)
+
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/12"}}}"""))
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/3"}}}"""))
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/5"}}}"""))
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/2"}}}"""))
+        assertTrue(strContent.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/8"}}}"""))
+
+        assertTrue(strContent.contains("""{"first":{"href":"http://localhost:8081/api/book/v1?page=0&size=12&sort=title,asc"}"""))
+        assertTrue(strContent.contains(""","self":{"href":"http://localhost:8081/api/book/v1?page=0&size=12&sort=title,asc"}"""))
+        assertTrue(strContent.contains(""","next":{"href":"http://localhost:8081/api/book/v1?page=1&size=12&sort=title,asc"}"""))
+        assertTrue(strContent.contains(""","last":{"href":"http://localhost:8081/api/book/v1?page=1&size=12&sort=title,asc"}"""))
+
+        assertTrue(strContent.contains(""","page":{"size":12,"totalElements":15,"totalPages":2,"number":0}}"""))
     }
 
     private fun mockBook() {

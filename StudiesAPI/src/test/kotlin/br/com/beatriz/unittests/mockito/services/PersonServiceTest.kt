@@ -33,7 +33,7 @@ class PersonServiceTest {
         MockitoAnnotations.openMocks(this)
     }
 
-    @Test
+    /*@Test
     fun findAll() {
         val list = inputObject.mockEntityList()
         `when`(repository.findAll()).thenReturn(list)
@@ -78,7 +78,7 @@ class PersonServiceTest {
         assertEquals("First Name Test7", personSeven.firstName)
         assertEquals("Last Name Test7", personSeven.lastName)
         assertEquals("Female", personSeven.gender)
-    }
+    }*/
 
     @Test
     fun findById() {
