@@ -1,4 +1,3 @@
-/*
 package br.com.beatriz.unittests.mockito.services
 
 import br.com.beatriz.exceptions.RequiredObjectIsNullException
@@ -32,50 +31,6 @@ class BookServiceTest {
     fun setUpMock() {
         inputObject = MockBook()
         MockitoAnnotations.openMocks(this)
-    }
-
-    @Test
-    fun findAll() {
-        val list = inputObject.mockEntityList()
-        `when`(repository.findAll()).thenReturn(list)
-
-        val books = service.findAll()
-
-        assertNotNull(books)
-        assertEquals(14, books.size)
-
-        val bookOne = books[1]
-
-        assertNotNull(bookOne)
-        assertNotNull(bookOne.key)
-        assertNotNull(bookOne.links)
-        println(bookOne.links)
-        assertTrue(bookOne.links.toString().contains("/api/book/v1/1"))
-        assertEquals("Some Title1", bookOne.title)
-        assertEquals("Some Author1", bookOne.author)
-        assertEquals(25.0, bookOne.price)
-
-        val bookFour = books[4]
-
-        assertNotNull(bookFour)
-        assertNotNull(bookFour.key)
-        assertNotNull(bookFour.links)
-        println(bookFour.links)
-        assertTrue(bookFour.links.toString().contains("/api/book/v1/4"))
-        assertEquals("Some Title4", bookFour.title)
-        assertEquals("Some Author4", bookFour.author)
-        assertEquals(25.0, bookFour.price)
-
-        val bookSeven = books[7]
-
-        assertNotNull(bookSeven)
-        assertNotNull(bookSeven.key)
-        assertNotNull(bookSeven.links)
-        println(bookSeven.links)
-        assertTrue(bookSeven.links.toString().contains("/api/book/v1/7"))
-        assertEquals("Some Title7", bookSeven.title)
-        assertEquals("Some Author7", bookSeven.author)
-        assertEquals(25.0, bookSeven.price)
     }
 
     @Test
@@ -172,4 +127,4 @@ class BookServiceTest {
 
 
     }
-}*/
+}
