@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.beatriz</groupId>
-	<artifactId>StudiesAPI</artifactId>
+	<artifactId>KotlinAPI</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>StudiesAPI</name>
 	<description>Demo project for Spring Boot</description>
