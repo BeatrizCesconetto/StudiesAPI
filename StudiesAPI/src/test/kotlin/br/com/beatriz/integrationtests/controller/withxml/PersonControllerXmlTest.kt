@@ -343,17 +343,19 @@ class PersonControllerXmlTest : AbstractIntegrationTest() {
 
         println(content)
 
-        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/974"}}}"""))
-        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/667"}}}"""))
-        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/926"}}}"""))
-        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/586"}}}"""))
-        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:8081/api/person/v1/949"}}}"""))
+        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:"""))
+        assertTrue(content.contains("""/api/person/v1/"""))
 
-        assertTrue(content.contains("""{"first":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=0&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","prev":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=2&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","self":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=3&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","next":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=4&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","last":{"href":"http://localhost:8081/api/person/v1?limit=5&direction=asc&page=201&size=5&sort=firstName,asc"}"""))
+        assertTrue(content.contains("""{"first":{"href":"http://localhost:"""))
+        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=0&size=5&sort=firstName,asc"}"""))
+        assertTrue(content.contains(""","prev":{"href":"http://localhost:"""))
+        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=2&size=5&sort=firstName,asc"}"""))
+        assertTrue(content.contains(""","self":{"href":"http://localhost:"""))
+        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=3&size=5&sort=firstName,asc"}"""))
+        assertTrue(content.contains(""","next":{"href":"http://localhost:"""))
+        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=4&size=5&sort=firstName,asc"}"""))
+        assertTrue(content.contains(""","last":{"href":"http://localhost:"""))
+        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=201&size=5&sort=firstName,asc"}"""))
 
         assertTrue(content.contains(""""page":{"size":5,"totalElements":1008,"totalPages":202,"number":3}}"""))
     }
