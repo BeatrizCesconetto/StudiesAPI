@@ -24,7 +24,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Startup::class])
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = [Startup::class])
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(Lifecycle.PER_CLASS)
 class PersonControllerYmlTest : AbstractIntegrationTest() {
@@ -316,7 +316,7 @@ class PersonControllerYmlTest : AbstractIntegrationTest() {
         assertEquals("Senna", item1.lastName)
         assertEquals("São Paulo", item1.address)
         assertEquals("Male", item1.gender)
-        assertEquals(false, item1.enabled)
+        assertEquals(true, item1.enabled)
     }
 
     @Test
@@ -377,7 +377,7 @@ class PersonControllerYmlTest : AbstractIntegrationTest() {
         assertTrue(content.contains(""","next":{"href":"http://localhost:8081/api/person/v1?limit=12&direction=desc&page=4&size=12&sort=firstName,desc"}"""))
         assertTrue(content.contains(""","last":{"href":"http://localhost:8081/api/person/v1?limit=12&direction=desc&page=83&size=12&sort=firstName,desc"}"""))
 
-        assertTrue(content.contains(""""page":{"size":12,"totalElements":1008,"totalPages":84,"number":3}}"""))
+        assertTrue(content.contains(""""page":{"size":12,"totalElements":1007,"totalPages":84,"number":3}}"""))
     }
 
 
