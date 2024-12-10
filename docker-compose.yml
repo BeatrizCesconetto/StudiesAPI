@@ -21,8 +21,8 @@ services:
   rest-with-spring-boot-beatriz:
     image: leandrocgsi/rest-with-spring-boot-beatriz
     restart: always
-    build: ./rest-with-spring-boot-and-kotlin-beatriz
-    working_dir: /rest-with-spring-boot-and-kotlin-beatriz
+    build: ./StudiesAPI
+    working_dir: /StudiesAPI
     environment:
       TZ: America/Sao_Paulo
       SPRING.DATASOURCE.URL: jdbc:mysql://db:3307/rest_with_spring_boot?useTimezone=true&serverTimezone=UTC
