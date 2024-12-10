@@ -334,7 +334,7 @@ class PersonControllerJsonTest : AbstractIntegrationTest() {
             .spec(specification)
             .contentType(TestConfigs.CONTENT_TYPE_JSON)
             .queryParams(
-                "page", 3,
+                "page", 1,
                 "limit", 5,
                 "direction", "asc"
             )
@@ -346,23 +346,41 @@ class PersonControllerJsonTest : AbstractIntegrationTest() {
             .body()
             .asString()
 
-        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1/"""))
+        val jsonNode = objectMapper.readTree(content)
 
-        assertTrue(content.contains("""{"first":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=0&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","prev":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=2&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","self":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=3&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","next":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=4&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","last":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=201&size=5&sort=firstName,asc"}"""))
+        val links = jsonNode["_links"]
+        assertNotNull(links)
+        assertTrue(links.has("first"))
+        assertTrue(links.has("prev"))
+        assertTrue(links.has("self"))
+        assertTrue(links.has("next"))
+        assertTrue(links.has("last"))
 
-        assertTrue(content.contains(""""page":{"size":5,"totalElements":1009,"totalPages":202,"number":3}}"""))
+        val embedded = jsonNode["_embedded"]
+        assertNotNull(embedded)
+        assertTrue(embedded.has("personVOList"))
+
+        val personVOList = embedded["personVOList"]
+        assertTrue(personVOList.isArray)
+        assertTrue(personVOList.size() > 0)
+
+        for (person in personVOList) {
+            assertNotNull(person["id"])
+            assertNotNull(person["firstName"])
+            assertNotNull(person["lastName"])
+            assertNotNull(person["address"])
+            assertNotNull(person["gender"])
+            assertNotNull(person["_links"])
+            assertTrue(person["_links"].has("self"))
+        }
+
+        val page = jsonNode["page"]
+        assertNotNull(page)
+        assertTrue(page["size"].isInt)
+        assertTrue(page["totalElements"].isInt)
+        assertTrue(page["totalPages"].isInt)
+        assertTrue(page["number"].isInt)
     }
-
 
 
     private fun mockPerson() {

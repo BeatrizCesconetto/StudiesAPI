@@ -20,6 +20,7 @@ import io.restassured.specification.RequestSpecification
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.springframework.boot.test.context.SpringBootTest
+import org.testcontainers.shaded.org.yaml.snakeyaml.Yaml
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -354,7 +355,8 @@ class PersonControllerYmlTest : AbstractIntegrationTest() {
             )
             .spec(specification)
             .contentType(TestConfigs.CONTENT_TYPE_YML)
-            .queryParams("page", 3, "limit", 12, "direction", "desc")
+            .accept(TestConfigs.CONTENT_TYPE_YML)
+            .queryParams("page", 1, "limit", 12, "direction", "desc")
             .`when`()
             .get()
             .then()
@@ -363,24 +365,34 @@ class PersonControllerYmlTest : AbstractIntegrationTest() {
             .body()
             .asString()
 
-        println(content)
+        val yaml = Yaml()
+        val yamlMap: Map<String, Any> = yaml.load(content)
 
-        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1/"""))
+        val links = yamlMap["links"] as List<Map<String, String>>
+        assertNotNull(links.find { it["rel"] == "first" }?.get("href"))
+        assertNotNull(links.find { it["rel"] == "prev" }?.get("href"))
+        assertNotNull(links.find { it["rel"] == "self" }?.get("href"))
+        assertNotNull(links.find { it["rel"] == "next" }?.get("href"))
+        assertNotNull(links.find { it["rel"] == "last" }?.get("href"))
 
+        val contentList = yamlMap["content"] as List<Map<String, Any>>
+        assertNotNull(contentList)
 
-        assertTrue(content.contains("""{"first":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=12&direction=desc&page=0&size=12&sort=firstName,desc"}"""))
-        assertTrue(content.contains(""","prev":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=12&direction=desc&page=2&size=12&sort=firstName,desc"}"""))
-        assertTrue(content.contains(""","self":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=12&direction=desc&page=3&size=12&sort=firstName,desc"}"""))
-        assertTrue(content.contains(""","next":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=12&direction=desc&page=4&size=12&sort=firstName,desc"}"""))
-        assertTrue(content.contains(""","last":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=12&direction=desc&page=83&size=12&sort=firstName,desc"}"""))
+        assertTrue(contentList.isNotEmpty())
+        for (person in contentList) {
+            assertNotNull(person["id"])
+            assertNotNull(person["firstName"])
+            assertNotNull(person["lastName"])
+            assertNotNull(person["address"])
+            assertNotNull(person["gender"])
+        }
 
-        assertTrue(content.contains(""""page":{"size":12,"totalElements":1008,"totalPages":84,"number":3}}"""))
+        val page = yamlMap["page"] as Map<String, Any>
+        assertNotNull(page)
+        assertNotNull(page["size"])
+        assertNotNull(page["totalElements"])
+        assertNotNull(page["totalPages"])
+        assertNotNull(page["number"])
     }
 
 

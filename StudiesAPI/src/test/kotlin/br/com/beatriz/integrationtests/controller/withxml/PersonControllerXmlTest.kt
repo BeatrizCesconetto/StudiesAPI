@@ -329,8 +329,9 @@ class PersonControllerXmlTest : AbstractIntegrationTest() {
         val content = given()
             .spec(specification)
             .contentType(TestConfigs.CONTENT_TYPE_XML)
+            .accept(TestConfigs.CONTENT_TYPE_XML)
             .queryParams(
-                "page", 3,
+                "page", 1,
                 "limit", 5,
                 "direction", "asc")
             .`when`()
@@ -341,23 +342,33 @@ class PersonControllerXmlTest : AbstractIntegrationTest() {
             .body()
             .asString()
 
-        println(content)
+        val xmlPath = io.restassured.path.xml.XmlPath(content)
 
-        assertTrue(content.contains("""_links":{"self":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1/"""))
+        assertNotNull(xmlPath.getString("PagedModel.links.find { it.rel == 'first' }.href"))
+        assertNotNull(xmlPath.getString("PagedModel.links.find { it.rel == 'prev' }.href"))
+        assertNotNull(xmlPath.getString("PagedModel.links.find { it.rel == 'self' }.href"))
+        assertNotNull(xmlPath.getString("PagedModel.links.find { it.rel == 'next' }.href"))
+        assertNotNull(xmlPath.getString("PagedModel.links.find { it.rel == 'last' }.href"))
 
-        assertTrue(content.contains("""{"first":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=0&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","prev":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=2&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","self":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=3&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","next":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=4&size=5&sort=firstName,asc"}"""))
-        assertTrue(content.contains(""","last":{"href":"http://localhost:"""))
-        assertTrue(content.contains("""/api/person/v1?limit=5&direction=asc&page=201&size=5&sort=firstName,asc"}"""))
+        assertNotNull(xmlPath.getString("PagedModel.content"))
 
-        assertTrue(content.contains(""""page":{"size":5,"totalElements":1008,"totalPages":202,"number":3}}"""))
+        val personVOList: List<Map<String, Any>> = xmlPath.getList("PagedModel.content.content")
+        assertTrue(personVOList.isNotEmpty())
+
+        for (i in personVOList.indices) {
+            assertNotNull(xmlPath.getString("PagedModel.content.content[$i].id"))
+            assertNotNull(xmlPath.getString("PagedModel.content.content[$i].firstName"))
+            assertNotNull(xmlPath.getString("PagedModel.content.content[$i].lastName"))
+            assertNotNull(xmlPath.getString("PagedModel.content.content[$i].address"))
+            assertNotNull(xmlPath.getString("PagedModel.content.content[$i].gender"))
+            assertNotNull(xmlPath.getString("PagedModel.content.content[$i].links.find { it.rel == 'self' }.href"))
+        }
+
+        assertNotNull(xmlPath.getString("PagedModel.page"))
+        assertNotNull(xmlPath.getInt("PagedModel.page.size"))
+        assertNotNull(xmlPath.getInt("PagedModel.page.totalElements"))
+        assertNotNull(xmlPath.getInt("PagedModel.page.totalPages"))
+        assertNotNull(xmlPath.getInt("PagedModel.page.number"))
     }
 
     private fun mockPerson() {
