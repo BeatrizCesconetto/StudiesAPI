@@ -39,7 +39,8 @@ jobs:
 
     - name: Push to Docker Hub Container registry
       run: |
-        IMAGE_ID=$(docker images leandrocgsi/rest-with-spring-boot-beatriz --format "{{b7971c653f33}}")
+        IMAGE_ID=$(docker images leandrocgsi/rest-with-spring-boot-beatriz --filter "reference=leandrocgsi/rest-with-spring-boot-beatriz:latest" --format "{{.ID}}")
+        echo "Using IMAGE_ID=$IMAGE_ID"
         
         docker tag $IMAGE_ID leandrocgsi/rest-with-spring-boot-beatriz:${{github.run_id}}
         
