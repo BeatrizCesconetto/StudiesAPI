@@ -1,1 +1,40 @@
-version: '3.9'
+version: '3.1'
+services:
+  db:
+    image: mysql:8.0.28
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_ROOT_PASSWORD: Bc33441514@
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: Bc33441514@
+      MYSQL_DATABASE: rest_with_spring_boot
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_TCP_PORT: 3307
+    ports:
+      - "3307:3307"
+    expose:
+      - 3307
+    networks:
+      - beatriz-network
+  rest-with-spring-boot-beatriz:
+    image: leandrocgsi/rest-with-spring-boot-beatriz
+    restart: always
+    build: ./rest-with-spring-boot-and-kotlin-beatriz
+    working_dir: /rest-with-spring-boot-and-kotlin-beatriz
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING.DATASOURCE.URL: jdbc:mysql://db:3307/rest_with_spring_boot?useTimezone=true&serverTimezone=UTC
+      SPRING.DATASOURCE.USERNAME: root
+      SPRING.DATASOURCE.PASSWORD: Bc33441514@
+    ports:
+      - "8081:8081"
+    command: mvn spring-boot:run
+    depends_on:
+      - db
+    networks:
+      - beatriz-network
+networks:
+  beatriz-network:
+    driver: bridge
