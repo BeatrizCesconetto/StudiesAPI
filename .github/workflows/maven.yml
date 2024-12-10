@@ -33,6 +33,9 @@ jobs:
     - name: Docker Compose Build 
       working-directory: ./StudiesAPI/
       run: docker compose build
+      
+    - name: Verify Docker Images
+      run: docker images  
 
     - name: Push to Docker Hub Container registry
       run: |
