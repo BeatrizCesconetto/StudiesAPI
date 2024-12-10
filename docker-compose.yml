@@ -19,7 +19,7 @@ services:
     networks:
       - beatriz-network
   rest-with-spring-boot-beatriz:
-    image: leandrocgsi/rest-with-spring-boot-beatriz
+    image: leandrocgsi/rest-with-spring-boot-beatriz:latest
     restart: always
     build: ./StudiesAPI
     working_dir: /StudiesAPI
